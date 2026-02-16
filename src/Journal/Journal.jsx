@@ -1,6 +1,6 @@
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import db from '../db'
+import {db} from '../db'
 import { Link } from "react-router-dom";
 import { AddJournal } from "./AddJournal";
 
