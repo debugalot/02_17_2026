@@ -1,7 +1,7 @@
 import { doc, getDoc, deleteDoc, setDoc } from "firebase/firestore";
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
-import db from '../db'
+import {db} from '../db'
 
 export default function JournalEntry() {
     const [entry, setEntry] = useState(null)

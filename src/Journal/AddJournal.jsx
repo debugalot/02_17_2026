@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { collection, addDoc } from "firebase/firestore"; 
-import db from '../db'
+import {db} from '../db'
 
 export function AddJournal() {
   const [entry, setEntry] = useState('')
