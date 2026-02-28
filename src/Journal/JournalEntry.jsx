@@ -2,6 +2,7 @@ import { doc, getDoc, deleteDoc, setDoc } from "firebase/firestore";
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react'
 import {db} from '../db'
+import firebase from 'firebase/compat/app';
 
 export default function JournalEntry() {
     const [entry, setEntry] = useState(null)
@@ -9,10 +10,25 @@ export default function JournalEntry() {
     const [hasError, setHasError] = useState(false)
     const { id } = useParams();
     const navigate = useNavigate()
+    const [user, setUser] = useState({})
+ 
+
+    useEffect(() =>{
+        const usRegisterAuthObserver =  firebase.auth().onAuthStateChanged(user => {
+            console.log(user.displayName)
+            setUser(user)
+        })
+
+        return () => usRegisterAuthObserver
+    },[user])    
 
     useEffect(() => {
+        if (user.uid === undefined) {
+            return
+        }
+
         const getData = async () => {
-            const docRef = doc(db, "journal-entries", id);
+            const docRef = doc(db, 'users', user.uid, "journal-entries", id);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
@@ -24,11 +40,11 @@ export default function JournalEntry() {
             }
         }
         getData()
-    }, [id])
+    }, [id, user.uid])
 
     const handleDelete = async () => {
         if (window.confirm("Are you sure you want to delete this memory?")) {
-            await deleteDoc(doc(db, "journal-entries", id));
+            await deleteDoc(doc(db, 'users', user.uid, "journal-entries", id));
             navigate('/journal')
         }
     }

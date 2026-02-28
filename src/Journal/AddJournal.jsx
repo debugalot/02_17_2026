@@ -1,18 +1,38 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { collection, addDoc } from "firebase/firestore"; 
 import {db} from '../db'
+import firebase from 'firebase/compat/app';
 
 export function AddJournal() {
   const [entry, setEntry] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false) // Added for a better UX
-  
+  const [user, setUser] = useState({})
+   
+  useEffect(() =>{
+      const usRegisterAuthObserver =  firebase.auth().onAuthStateChanged(user => {
+        
+        if (user?.uid !== undefined) {
+          console.log(user.displayName)
+        }
+        
+          setUser(user)
+      })
+
+      return () => usRegisterAuthObserver
+  },[user])
+
+
+  if (user?.uid !== undefined) {
+    console.log("USER", user.uid)
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!entry.trim()) return; // Don't submit empty entries
 
     setIsSubmitting(true)
     try {
-      await addDoc(collection(db, "journal-entries"), {
+      await addDoc(collection(db, 'users', user.uid,  "journal-entries"), {
         entry: entry,
         createdAt: new Date()
       });

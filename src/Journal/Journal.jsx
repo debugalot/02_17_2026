@@ -3,18 +3,43 @@ import { useEffect, useState } from "react";
 import {db} from '../db'
 import { Link } from "react-router-dom";
 import { AddJournal } from "./AddJournal";
+import firebase from 'firebase/compat/app';
 
 export default function Journal() {
     const [entries, setEntries] = useState([]);
+    const [user, setUser] = useState({})
+ 
+    useEffect(() =>{
+        const usRegisterAuthObserver =  firebase.auth().onAuthStateChanged(user => {
+            
+            if (user?.uid !== undefined) {
+                console.log(user.displayName)
+            }
+
+            setUser(user)
+        })
+
+        return () => usRegisterAuthObserver
+    },[user])
+
+    if (user?.uid !== undefined) {
+        console.log("USER", user.uid)
+    }
 
     useEffect(() => {
-        const entriesQuery = query(collection(db, `journal-entries`), orderBy("createdAt", "desc"));
+
+        
+        // const userID = 'yk3jjdofF2eCgoJj4CLB'
+        if (user?.uid === undefined) {
+            return
+        }
+        const entriesQuery = query(collection(db, 'users', user.uid, `journal-entries`), orderBy("createdAt", "desc"));
         const unsubscribe = onSnapshot(entriesQuery, (snapshot) => {
             setEntries(snapshot.docs);
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [user]);
 
     return (
         <div className="w-full mx-auto p-6 bg-gray-50 min-h-screen">
