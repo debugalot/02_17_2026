@@ -38,7 +38,6 @@ export default function Home() {
                 Home
             </h1>
             <div id='firebaseui-auth-container'></div>
-            
         </div>
     );
 }
